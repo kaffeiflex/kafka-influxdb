@@ -31,6 +31,23 @@ class Encoder(object):
          "type_instance":   "idle"
        }
     ]
+    Multiple values format in one sample:
+    [{"values":[0,1],"dstypes":["derive"],"dsnames":["value1,value2"],"time":1436372292.412,"interval":10.000,"host":"26f2fc918f50","plugin":"cpu","plugin_instance":"1","type":"cpu","type_instance":"interrupt"}]
+
+    [
+       {
+         "values":  [0,1],
+         "dstypes":  ["counter"],
+         "dsnames":    ["value1,value2"],
+         "time":      1280959128,
+         "interval":          10,
+         "host":            "leeloo.octo.it",
+         "plugin":          "cpu",
+         "plugin_instance": "0",
+         "type":            "cpu",
+         "type_instance":   "idle"
+       }
+    ]
     """
     def encode(self, msg):
         measurements = []
@@ -95,8 +112,9 @@ class Encoder(object):
         if len(values) == 1:
             return entry['values'][0]
         else:
-            # support to add multiple values
-            value = ' '.join(str(value) for value in values)
-            return '"%s"' % value
-
+            # influxdb supports writing a record with multiple field values. 
+            field_pairs = []
+            for key, value in zip(entry['dsname'], values):
+                field_pairs.append("%s=%s" % (key, value))
+            return ','.join(field_pairs)
 
