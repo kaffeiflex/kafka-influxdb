@@ -113,6 +113,7 @@ class Encoder(object):
             return entry['values'][0]
         else:
             # influxdb supports writing a record with multiple field values. 
+            # e.g: 'cpu_load_short,host=server01,region=us-west mem=0.1,cpu=0.2 1422568543702900257'
             field_pairs = []
             for key, value in zip(entry['dsname'], values):
                 field_pairs.append("%s=%s" % (key, value))
